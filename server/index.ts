@@ -45,9 +45,57 @@
 
 
 
+// import "dotenv/config";
+// import express from "express";
+// import cors from "cors";
+// import { connectDB } from "./db";
+
+// import {
+//   handleCancelBooking,
+//   handleCreateBooking,
+//   handleGetBookings,
+//   handleUpdateBookingStatus
+// } from "./routes/booking";
+
+// import { handleLogin, handleRegister } from "./routes/auth";
+// import { handleGetServiceById, handleGetServices } from "./routes/Service";
+
+// export function createServer() {
+//   connectDB();
+
+//   const app = express();
+//   app.use(cors());
+//   app.use(express.json());
+
+//   app.get("/api/health", (_req, res) => {
+//     res.json({ status: "OK" });
+//   });
+
+//   // Services
+//   app.get("/api/services", handleGetServices);
+//   app.get("/api/services/:id", handleGetServiceById);
+
+//   // Auth
+//   app.post("/api/auth/register", handleRegister);
+//   app.post("/api/auth/login", handleLogin);
+
+//   // Bookings
+//   app.get("/api/bookings", handleGetBookings);
+//   app.post("/api/bookings", handleCreateBooking);
+//   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
+//   app.delete("/api/bookings/:id", handleCancelBooking);
+
+//   console.log(`✅ Express app created on http://localhost:${process.env.PORT || 5000}`);
+//   return app;
+// }
+
+
+
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import path from "path"; // ✅ Add this
+import { fileURLToPath } from "url"; // ✅ Add this
 import { connectDB } from "./db";
 
 import {
@@ -67,8 +115,13 @@ export function createServer() {
   app.use(cors());
   app.use(express.json());
 
-  app.get("/api/health", (_req, res) => {
-    res.json({ status: "OK" });
+  // 🔹 Fix wildcard route for Windows + Node 20
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  // Must be last route, after all API routes
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(__dirname, "../spa/index.html"));
   });
 
   // Services
@@ -88,3 +141,4 @@ export function createServer() {
   console.log(`✅ Express app created on http://localhost:${process.env.PORT || 5000}`);
   return app;
 }
+
