@@ -13,53 +13,6 @@
 // import { handleLogin, handleRegister } from "./routes/auth";
 // import { handleGetServiceById, handleGetServices } from "./routes/Service";
 
-// connectDB();
-
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
-
-// app.get("/api/health", (_req, res) => {
-//   res.json({ status: "OK" });
-// });
-
-// // Services
-// app.get("/api/services", handleGetServices);
-// app.get("/api/services/:id", handleGetServiceById);
-
-// // Auth
-// app.post("/api/auth/register", handleRegister);
-// app.post("/api/auth/login", handleLogin);
-
-// // Bookings
-// app.get("/api/bookings", handleGetBookings);
-// app.post("/api/bookings", handleCreateBooking);
-// app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
-// app.delete("/api/bookings/:id", handleCancelBooking);
-
-// export function createServer() {
-//   console.log(`✅ Backend running on http://localhost:${process.env.PORT || 5000}`);
-//   return app;
-// }
-
-
-
-
-// import "dotenv/config";
-// import express from "express";
-// import cors from "cors";
-// import { connectDB } from "./db";
-
-// import {
-//   handleCancelBooking,
-//   handleCreateBooking,
-//   handleGetBookings,
-//   handleUpdateBookingStatus
-// } from "./routes/booking";
-
-// import { handleLogin, handleRegister } from "./routes/auth";
-// import { handleGetServiceById, handleGetServices } from "./routes/Service";
-
 // export function createServer() {
 //   connectDB();
 
@@ -90,91 +43,30 @@
 // }
 
 
-// import "dotenv/config";
-// import express from "express";
-// import cors from "cors";
-// import { connectDB } from "./db";
-
-// import {
-//   handleCancelBooking,
-//   handleCreateBooking,
-//   handleGetBookings,
-//   handleUpdateBookingStatus
-// } from "./routes/booking";
-
-// import { handleLogin, handleRegister } from "./routes/auth";
-// import { handleGetServiceById, handleGetServices } from "./routes/Service";
-
-// connectDB();
-
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
-
-// app.get("/api/health", (_req, res) => {
-//   res.json({ status: "OK" });
-// });
-
-// // Services
-// app.get("/api/services", handleGetServices);
-// app.get("/api/services/:id", handleGetServiceById);
-
-// // Auth
-// app.post("/api/auth/register", handleRegister);
-// app.post("/api/auth/login", handleLogin);
-
-// // Bookings
-// app.get("/api/bookings", handleGetBookings);
-// app.post("/api/bookings", handleCreateBooking);
-// app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
-// app.delete("/api/bookings/:id", handleCancelBooking);
-
-// export function createServer() {
-//   console.log(`✅ Backend running on http://localhost:${process.env.PORT || 5000}`);
-//   return app;
-// }
-
-
-import "dotenv/config";
+import path from "path";
 import express from "express";
-import cors from "cors";
-import { connectDB } from "./db";
+import { createServer } from "./server";
 
-import {
-  handleCancelBooking,
-  handleCreateBooking,
-  handleGetBookings,
-  handleUpdateBookingStatus
-} from "./routes/booking";
+const PORT = process.env.PORT || 5000;
+const HOST = "0.0.0.0";
 
-import { handleLogin, handleRegister } from "./routes/auth";
-import { handleGetServiceById, handleGetServices } from "./routes/Service";
+const app = createServer();
 
-export function createServer() {
-  connectDB();
+// SPA build path
+const __dirname = import.meta.dirname;
+const distPath = path.join(__dirname, "../spa");
 
-  const app = express();
-  app.use(cors());
-  app.use(express.json());
+// Serve frontend
+app.use(express.static(distPath));
 
-  app.get("/api/health", (_req, res) => {
-    res.json({ status: "OK" });
-  });
+// ✅ Express 5 SAFE fallback
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
-  // Services
-  app.get("/api/services", handleGetServices);
-  app.get("/api/services/:id", handleGetServiceById);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+});
+export { createServer };
 
-  // Auth
-  app.post("/api/auth/register", handleRegister);
-  app.post("/api/auth/login", handleLogin);
-
-  // Bookings
-  app.get("/api/bookings", handleGetBookings);
-  app.post("/api/bookings", handleCreateBooking);
-  app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
-  app.delete("/api/bookings/:id", handleCancelBooking);
-
-  console.log(`✅ Express app created on http://localhost:${process.env.PORT || 5000}`);
-  return app;
-}
