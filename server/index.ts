@@ -90,12 +90,9 @@
 // }
 
 
-
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import path from "path"; // ✅ Add this
-import { fileURLToPath } from "url"; // ✅ Add this
 import { connectDB } from "./db";
 
 import {
@@ -115,13 +112,8 @@ export function createServer() {
   app.use(cors());
   app.use(express.json());
 
-  // 🔹 Fix wildcard route for Windows + Node 20
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-
-  // Must be last route, after all API routes
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "../spa/index.html"));
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "OK" });
   });
 
   // Services
@@ -141,4 +133,3 @@ export function createServer() {
   console.log(`✅ Express app created on http://localhost:${process.env.PORT || 5000}`);
   return app;
 }
-
