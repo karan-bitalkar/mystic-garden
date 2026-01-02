@@ -1,10 +1,17 @@
-import './global.css'; // in main.jsx or main.tsx
 import React from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App"; // ye tumhara existing App.tsx hai
-import "./global.css"; // global CSS
+import App from "./App";
+import "./global.css";
 
-createRoot(document.getElementById("root")!).render(
+const container = document.getElementById("root");
+
+if (!container) {
+  throw new Error("Root container missing in index.html");
+}
+
+const root = createRoot(container);
+
+root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>

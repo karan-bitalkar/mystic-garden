@@ -898,7 +898,7 @@
 
 
 
-
+import { apiFetch } from "@/lib/api";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -987,58 +987,51 @@ export default function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!validateForm()) {
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+
+  try {
+    const { res, data } = await apiFetch("api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      }),
+    });
+
+    if (!res.ok || !data.success) {
+      toast({
+        title: "Registration Failed",
+        description: data.error || data.message || "Something went wrong",
+        variant: "destructive",
+      });
       return;
     }
 
-    setIsLoading(true);
+    toast({
+      title: "Account Created 🎉",
+      description: "Please login now",
+    });
 
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        }),
-      });
+    navigate("/login");
+  } catch {
+    toast({
+      title: "Error",
+      description: "Network error. Please try again.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        toast({
-          title: "Registration Failed",
-          description: data.error || data.message || "Something went wrong",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      toast({
-        title: "Account Created Successfully! 🎉",
-        description: `Welcome ${formData.name}! Redirecting to login...`,
-      });
-
-      navigate("/login");
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Network error. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const passwordStrength =
     formData.password.length >= 8 ? "strong" : "weak";

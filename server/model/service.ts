@@ -226,4 +226,4 @@ export const handleGetServiceById: RequestHandler = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: "Failed to fetch service" });
   }
-};
+};  

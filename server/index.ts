@@ -43,8 +43,40 @@
 // }
 
 
+// import path from "path";
+// import express from "express";
+// import { createServer } from "./server";
+
+// const PORT = process.env.PORT || 5000;
+// const HOST = "0.0.0.0";
+
+// const app = createServer();
+
+// // SPA build path
+// const __dirname = import.meta.dirname;
+// const distPath = path.join(__dirname, "../spa");
+
+// // Serve frontend
+// app.use(express.static(distPath));
+
+// // ✅ Express 5 SAFE fallback
+// app.use((req, res, next) => {
+//   if (req.path.startsWith("/api")) return next();
+//   res.sendFile(path.join(distPath, "index.html"));
+// });
+
+// app.listen(PORT, HOST, () => {
+//   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+// });
+// export { createServer };
+
+
+
+
+// index.ts
 import path from "path";
 import express from "express";
+import { fileURLToPath } from "url";
 import { createServer } from "./server";
 
 const PORT = process.env.PORT || 5000;
@@ -52,21 +84,25 @@ const HOST = "0.0.0.0";
 
 const app = createServer();
 
+// Get __dirname in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // SPA build path
-const __dirname = import.meta.dirname;
 const distPath = path.join(__dirname, "../spa");
 
 // Serve frontend
 app.use(express.static(distPath));
 
-// ✅ Express 5 SAFE fallback
+// Fallback for SPA (React/Vite)
 app.use((req, res, next) => {
   if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(distPath, "index.html"));
 });
 
+// Start server
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 });
-export { createServer };
 
+export { createServer };

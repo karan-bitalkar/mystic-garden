@@ -1,4 +1,6 @@
 import "./global.css";
+import "./firebase";
+
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
