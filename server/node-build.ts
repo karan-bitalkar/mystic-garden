@@ -104,7 +104,7 @@ app.get("/*", (req, res) => {
 // Listen on 0.0.0.0 for EC2 public access
 app.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${port}`);
-  console.log(`📱 Frontend: http://<EC2-PUBLIC-IP>:${port}`);
+  console.log(`📱 VITE_API_URL=http://13.60.231.82:5000`);
   console.log(`🔧 API: http://<EC2-PUBLIC-IP>:${port}/api`);
 });
 

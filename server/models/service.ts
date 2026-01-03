@@ -191,42 +191,23 @@
 
 
 
-
-
-
-// server/models/service.ts
 import mongoose, { Schema, Document } from "mongoose";
 
-
-// Interface define karo
 export interface IService extends Document {
-  title: string;
-  description: string;
-  price: number;
-  duration: number; // minutes mein
-  image?: string;
+  name: string;
   category?: string;
-  available?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  price: number;
+  description?: string;
 }
 
-// Schema banao
-const ServiceSchema = new Schema<IService>(
-  {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    price: { type: Number, required: true },
-    duration: { type: Number, required: true },
-    image: { type: String },
-    category: { type: String },
-    available: { type: Boolean, default: true },
-  },
-  { timestamps: true }
-);
+const ServiceSchema = new Schema<IService>({
+  name: { type: String, required: true },
+  category: { type: String },
+  price: { type: Number, required: true },
+  description: { type: String },
+});
 
-// Model banao
-const ServiceModel = mongoose.model<IService>("Service", ServiceSchema);
-
-// DEFAULT EXPORT karo (yeh zaruri hai!)
-export default ServiceModel;
+// ✅ EXPORT ACTUAL MODEL
+export const Service =
+  mongoose.models.Service ||
+  mongoose.model<IService>("Service", ServiceSchema);

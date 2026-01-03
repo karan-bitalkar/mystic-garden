@@ -1,6 +1,6 @@
 // import "dotenv/config";
 // import express from "express";
-// import cors from "cors";
+import cors from "cors";
 // import { connectDB } from "./db";
 
 // import {
@@ -17,7 +17,7 @@
 //   connectDB();
 
 //   const app = express();
-//   app.use(cors());
+
 //   app.use(express.json());
 
 //   app.get("/api/health", (_req, res) => {
@@ -71,15 +71,15 @@
 // export { createServer };
 
 
-
-
 // index.ts
 import path from "path";
 import express from "express";
 import { fileURLToPath } from "url";
 import { createServer } from "./server";
 
-const PORT = process.env.PORT || 5000;
+// ✅ FIX: PORT ko number me convert karo
+// const PORT: number = Number(process.env.PORT) || 5000;
+const PORT: number = Number(process.env.PORT) || 8080;
 const HOST = "0.0.0.0";
 
 const app = createServer();
@@ -104,5 +104,3 @@ app.use((req, res, next) => {
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 });
-
-export { createServer };

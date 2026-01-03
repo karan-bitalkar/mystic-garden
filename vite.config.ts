@@ -39,41 +39,79 @@
 //       const app = createServer();
 //       server.middlewares.use(app);
 //     },
-//   };
-// }
+// //   };
+//   // }
 
-import { defineConfig, Plugin } from "vite";
+//   import { defineConfig, Plugin } from "vite";
+//   import react from "@vitejs/plugin-react";
+//   import path from "path";
+//   import { createServer } from "./server";
+
+//   export default defineConfig(() => ({
+//     server: {
+//       host: "::",
+//       port: 5173,
+//       fs: {
+//         allow: [
+//           path.resolve(__dirname, "./"),
+//           path.resolve(__dirname, "./client"),
+//           path.resolve(__dirname, "./shared"),
+//         ],
+//         deny: [
+//           ".env",
+//           ".env.*",
+//           "*.{crt,pem}",
+//           "**/.git/**",
+//           "server/**",
+//         ],
+//       },
+//     },
+//     build: {
+//       // ✅ Firebase deploy ke liye output folder
+//       outDir: "dist/spa",
+//       emptyOutDir: true, // previous builds ko clear kar dega
+//     },
+//     plugins: [
+//       expressPlugin(), // ✅ Custom Express server
+//       react(),         // ✅ React plugin last
+//     ],
+//     resolve: {
+//       alias: {
+//         "@": path.resolve(__dirname, "./client"),
+//         "@shared": path.resolve(__dirname, "./shared"),
+//       },
+//     },
+//   }));
+
+//   // 🔹 Express plugin to use your server during dev
+//   function expressPlugin(): Plugin {
+//     return {
+//       name: "express-plugin",
+//       apply: "serve", // only during `vite dev`
+//       configureServer(server) {
+//         const app = createServer();
+//         server.middlewares.use(app);
+//       },
+//     };
+//   }
+
+
+
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import { createServer } from "./server";
 
-export default defineConfig(() => ({
+export default defineConfig({
   server: {
-    host: "::",
+    host: "0.0.0.0",
     port: 5173,
-    fs: {
-      allow: [
-        path.resolve(__dirname, "./"),
-        path.resolve(__dirname, "./client"),
-        path.resolve(__dirname, "./shared"),
-      ],
-      deny: [
-        ".env",
-        ".env.*",
-        "*.{crt,pem}",
-        "**/.git/**",
-        "server/**",
-      ],
-    },
   },
   build: {
-    // ✅ Firebase deploy ke liye output folder
     outDir: "dist/spa",
-    emptyOutDir: true, // previous builds ko clear kar dega
+    emptyOutDir: true,
   },
   plugins: [
-    expressPlugin(), // ✅ Custom Express server
-    react(),         // ✅ React plugin last
+    react(),
   ],
   resolve: {
     alias: {
@@ -81,16 +119,4 @@ export default defineConfig(() => ({
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },
-}));
-
-// 🔹 Express plugin to use your server during dev
-function expressPlugin(): Plugin {
-  return {
-    name: "express-plugin",
-    apply: "serve", // only during `vite dev`
-    configureServer(server) {
-      const app = createServer();
-      server.middlewares.use(app);
-    },
-  };
-}
+});
