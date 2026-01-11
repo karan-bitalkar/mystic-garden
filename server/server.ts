@@ -196,46 +196,43 @@ import { handleGetServiceById, handleGetServices } from "./routes/Service";
 export function createServer() {
   const app = express();
 
-  // ======================
-  // BODY PARSERS
-  // ======================
+  // Body parsers
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // ======================
-  // CORS (❌ NO wildcard route here)
-  // ======================
+  // ✅ CORS (FIXED – NO "*")
   app.use(
     cors({
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE"],
+      origin: true,
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
 
-  // ======================
-  // DATABASE
-  // ======================
+  // ❌ REMOVE THIS LINE (THIS WAS CRASHING SERVER)
+  // app.options("*", cors());
+
+  // DB
   connectDB();
 
-  // ======================
-  // HEALTH CHECK
-  // ======================
+  // Health check
   app.get("/api/health", (_req, res) => {
     res.json({ status: "OK" });
   });
 
-  // ======================
-  // ROUTES
-  // ======================
+  // Admin
   app.use("/api/admin", adminRoutes);
 
+  // Services
   app.get("/api/services", handleGetServices);
   app.get("/api/services/:id", handleGetServiceById);
 
+  // Auth
   app.post("/api/auth/register", handleRegister);
   app.post("/api/auth/login", handleLogin);
 
+  // Bookings
   app.get("/api/bookings", handleGetBookings);
   app.post("/api/bookings", handleCreateBooking);
   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
