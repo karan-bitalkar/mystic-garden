@@ -192,6 +192,10 @@ import {
 
 import { handleLogin, handleRegister } from "./routes/auth";
 import { handleGetServiceById, handleGetServices } from "./routes/Service";
+import dashboardRoutes from "./routes/dashboard";
+import ordersRoutes from "./routes/orders";
+import customersRoutes from "./routes/customers";
+import locationsRoutes from "./routes/locations";
 
 export function createServer() {
   const app = express();
@@ -230,6 +234,11 @@ export function createServer() {
   app.post("/api/bookings", handleCreateBooking);
   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
   app.delete("/api/bookings/:id", handleCancelBooking);
+
+  app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/orders", ordersRoutes);
+app.use("/api/customers", customersRoutes);
+app.use("/api/locations", locationsRoutes);
 
   return app;
 }
