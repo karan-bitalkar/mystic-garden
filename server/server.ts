@@ -119,6 +119,64 @@
 // }
   
 
+// import "dotenv/config";
+// import express from "express";
+// import cors from "cors";
+// import connectDB from "./db";
+// import adminRoutes from "./routes/admin";
+
+// import {
+//   handleCancelBooking,
+//   handleCreateBooking,
+//   handleGetBookings,
+//   handleUpdateBookingStatus,
+// } from "./routes/booking";
+
+// import { handleLogin, handleRegister } from "./routes/auth";
+// import { handleGetServiceById, handleGetServices } from "./routes/Service";
+
+// export function createServer() {
+//   const app = express();
+
+//   // Body parsers
+//   app.use(express.json());
+//   app.use(express.urlencoded({ extended: true }));
+
+//   // CORS
+//   app.use(
+//     cors({
+//       origin: "*",
+//       methods: ["GET", "POST", "PUT", "DELETE"],
+//       allowedHeaders: ["Content-Type", "Authorization"],
+//     })
+//   );
+
+//   // DB
+//   connectDB();
+
+//   // Health check
+//   app.get("/api/health", (_req, res) => {
+//     res.json({ status: "OK" });
+//   });
+
+//   // Routes
+//   app.use("/api/admin", adminRoutes);
+
+//   app.get("/api/services", handleGetServices);
+//   app.get("/api/services/:id", handleGetServiceById);
+
+//   app.post("/api/auth/register", handleRegister);
+//   app.post("/api/auth/login", handleLogin);
+
+//   app.get("/api/bookings", handleGetBookings);
+//   app.post("/api/bookings", handleCreateBooking);
+//   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
+//   app.delete("/api/bookings/:id", handleCancelBooking);
+
+//   return app;
+// }
+
+
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
@@ -138,11 +196,15 @@ import { handleGetServiceById, handleGetServices } from "./routes/Service";
 export function createServer() {
   const app = express();
 
-  // Body parsers
+  // ======================
+  // BODY PARSERS
+  // ======================
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // CORS
+  // ======================
+  // CORS (❌ NO wildcard route here)
+  // ======================
   app.use(
     cors({
       origin: "*",
@@ -151,15 +213,21 @@ export function createServer() {
     })
   );
 
-  // DB
+  // ======================
+  // DATABASE
+  // ======================
   connectDB();
 
-  // Health check
+  // ======================
+  // HEALTH CHECK
+  // ======================
   app.get("/api/health", (_req, res) => {
     res.json({ status: "OK" });
   });
 
-  // Routes
+  // ======================
+  // ROUTES
+  // ======================
   app.use("/api/admin", adminRoutes);
 
   app.get("/api/services", handleGetServices);
