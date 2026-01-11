@@ -1,29 +1,106 @@
-import "dotenv/config";
+  // import "dotenv/config";
+  // import express from "express";
+  // import cors from "cors";
+  // import { connectDB } from "./db";
+
+  // import {
+  //   handleCancelBooking,
+  //   handleCreateBooking,
+  //   handleGetBookings,
+  //   handleUpdateBookingStatus,
+  // } from "./routes/booking";
+
+  // import { handleLogin, handleRegister } from "./routes/auth";
+  // import { handleGetServiceById, handleGetServices } from "./routes/Service";
+
+  // export function createServer() {
+  //   connectDB();
+
+  //   const app = express();
+
+  //   // ✅ FIXED CORS (browser + S3 ke liye)
+  //   app.use(
+  //     cors({
+  //       origin: "*", // testing ke liye
+  //       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  //       allowedHeaders: ["Content-Type", "Authorization"],
+  //     })
+  //   );
+
+  //   // ✅ OPTIONS preflight (MOST IMPORTANT)
+  //   app.options("*", cors());
+
+  //   app.use(express.json());
+
+  //   // Health
+  //   app.get("/api/health", (_req, res) => {
+  //     res.json({ status: "OK" });
+  //   });
+
+  //   // Services
+  //   app.get("/api/services", handleGetServices);
+  //   app.get("/api/services/:id", handleGetServiceById);
+
+  //   // Auth
+  //   app.post("/api/auth/register", handleRegister);
+  //   app.post("/api/auth/login", handleLogin);
+
+  //   // Bookings
+  //   app.get("/api/bookings", handleGetBookings);
+  //   app.post("/api/bookings", handleCreateBooking);
+  //   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
+  //   app.delete("/api/bookings/:id", handleCancelBooking);
+
+  //   return app;
+  // }
+
+
+  import "dotenv/config";
 import express from "express";
+import bodyParser from "body-parser";  
 import cors from "cors";
-import { connectDB } from "./db";
+import connectDB from "./db";
+import adminRoutes from "./routes/admin";
+
 
 import {
   handleCancelBooking,
   handleCreateBooking,
   handleGetBookings,
-  handleUpdateBookingStatus
+  handleUpdateBookingStatus,
 } from "./routes/booking";
 
 import { handleLogin, handleRegister } from "./routes/auth";
 import { handleGetServiceById, handleGetServices } from "./routes/Service";
 
+
 export function createServer() {
+  const app = express();
+
+  // ✅ BODY PARSERS – FIRST (MOST IMPORTANT)
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+
+  // ✅ CORS
+  app.use(
+    cors({
+      origin: "*",
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
+  app.options("*", cors());
+
+  // ✅ DB AFTER middleware
   connectDB();
 
-  const app = express();
-  app.use(cors());
-  app.use(express.json());
-
+  // Health
   app.get("/api/health", (_req, res) => {
     res.json({ status: "OK" });
   });
 
+  // Admin routes
+  app.use("/api/admin", adminRoutes);
   // Services
   app.get("/api/services", handleGetServices);
   app.get("/api/services/:id", handleGetServiceById);
@@ -40,76 +117,4 @@ export function createServer() {
 
   return app;
 }
-
-
-
-// // server.ts
-// import "dotenv/config";
-// import express from "express";
-// import cors from "cors";
-// import { connectDB } from "./db";
-
-
-// // Booking routes
-// import {
-//   handleCancelBooking,
-//   handleCreateBooking,
-//   handleGetBookings,
-//   handleUpdateBookingStatus
-// } from "./routes/booking";
-
-// // Auth routes
-// import { handleLogin, handleRegister } from "./routes/auth";
-
-// // Service routes
-// import { handleGetServiceById, handleGetServices } from "./routes/Service";
-
-// export function createServer() {
-//   // Connect to MongoDB
-//   connectDB();
-
-//   const app = express();
-
-//   // Middleware
-// app.use(
-//   cors({
-//     origin: [
-//       "http://localhost:5173", // Vite frontend
-//       "http://localhost:3000", // CRA (just in case)
-//        "http://13.60.231.82:5173", // EC2 frontend
-//        "http://13.60.231.82", 
-//     ],
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   })
-// );
-
-//   // --------------------------
-//   // Health Check
-//   // --------------------------
-//   app.get("/api/health", (_req, res) => {
-//     res.json({ status: "OK" });
-//   });
-
-//   // --------------------------
-//   // Services
-//   // --------------------------
-//   app.get("/api/services", handleGetServices);
-//   app.get("/api/services/:id", handleGetServiceById);
-
-//   // --------------------------
-//   // Auth
-//   // --------------------------
-//   app.post("/api/auth/register", handleRegister);
-//   app.post("/api/auth/login", handleLogin);
-
-//   // --------------------------
-//   // Bookings
-//   // --------------------------
-//   app.get("/api/bookings", handleGetBookings);
-//   app.post("/api/bookings", handleCreateBooking);
-//   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
-//   app.delete("/api/bookings/:id", handleCancelBooking);
-
-//   return app;
-// }
+  

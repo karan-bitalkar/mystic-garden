@@ -55,13 +55,14 @@ const router = Router();
 /**
  * @route   POST /api/auth/register
  * @access  Public
- */
-router.post("/api/auth/register", handleRegister);
-
+//  */
+ router.post("/api/auth/register", handleRegister);
+//router.post("/auth/register", handleRegister);
 /**
  * @route   POST /api/auth/login
  * @access  Public
  */
 router.post("/api/auth/login", handleLogin);
+
 
 export default router;

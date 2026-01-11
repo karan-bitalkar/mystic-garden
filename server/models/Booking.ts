@@ -808,11 +808,100 @@
 
 
 
-// server/models/Booking.ts
+// // server/models/Booking.ts
+// import mongoose, { Schema, Document } from "mongoose";
+
+// export interface IBooking extends Document {
+//   userId: string;
+//   serviceId: string;
+//   serviceName: string;
+//   date: string;
+//   time: string;
+//   address: string;
+//   phone: string;
+//   price: number;
+//   paymentMethod: string;
+//   status: "pending" | "confirmed" | "completed" | "cancelled";
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
+
+// const bookingSchema = new Schema<IBooking>(
+//   {
+//     userId: { type: String, required: true },
+//     serviceId: { type: String, required: true },
+//     serviceName: { type: String, required: true },
+//     date: { type: String, required: true },
+//     time: { type: String, required: true },
+//     address: { type: String, required: true },
+//     phone: { type: String, required: true },
+//     price: { type: Number, required: true },
+//     paymentMethod: { type: String, required: true },
+//     status: {
+//       type: String,
+//       enum: ["pending", "confirmed", "completed", "cancelled"],
+//       default: "pending",
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+// export default mongoose.model<IBooking>("Booking", bookingSchema);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IBooking extends Document {
-  userId: string;
+  user: mongoose.Types.ObjectId;
   serviceId: string;
   serviceName: string;
   date: string;
@@ -821,29 +910,36 @@ export interface IBooking extends Document {
   phone: string;
   price: number;
   paymentMethod: string;
-  status: "pending" | "confirmed" | "completed" | "cancelled";
-  createdAt: Date;
-  updatedAt: Date;
+  status: "pending" | "accepted" | "rejected" | "completed";
 }
 
-const bookingSchema = new Schema<IBooking>(
+const BookingSchema = new Schema<IBooking>(
   {
-    userId: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+
     serviceId: { type: String, required: true },
+
     serviceName: { type: String, required: true },
+
     date: { type: String, required: true },
+
     time: { type: String, required: true },
+
     address: { type: String, required: true },
+
     phone: { type: String, required: true },
+
     price: { type: Number, required: true },
+
     paymentMethod: { type: String, required: true },
+
     status: {
       type: String,
-      enum: ["pending", "confirmed", "completed", "cancelled"],
+      enum: ["pending", "accepted", "rejected", "completed"],
       default: "pending",
     },
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IBooking>("Booking", bookingSchema);
+export default mongoose.model<IBooking>("Booking", BookingSchema);

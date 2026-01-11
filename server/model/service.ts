@@ -28,18 +28,48 @@
   //     res.status(500).json({ success: false, error: "Failed to fetch service" });
   //   }
   // };  
+import mongoose from "mongoose";
+import { RequestHandler } from "express";
+import { Service } from "../models/Service";
 
+export const handleGetServices: RequestHandler = async (_req, res) => {
+  try {
+    const services = await Service.find();
+    res.json({ success: true, data: services });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to fetch services" });
+  }
+};
 
+export const handleGetServiceById: RequestHandler = async (req, res) => {
+  try {
+    const rawId = req.params.id?.trim(); // 🔥 MAIN FIX
 
-  import mongoose from "mongoose";
+    if (!rawId || !mongoose.Types.ObjectId.isValid(rawId)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid Service ID",
+      });
+    }
 
-const ServiceSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  category: { type: String },
-  price: { type: Number, required: true },
-  description: { type: String },
-});
+    const service = await Service.findById(rawId);
 
-export const Service =
-  mongoose.models.Service ||
-  mongoose.model("Service", ServiceSchema);
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        error: "Service not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: service,
+    });
+  } catch (error) {
+    console.error("SERVICE FETCH ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch service",
+    });
+  }
+};

@@ -830,22 +830,27 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const res = await fetch("http://13.60.231.82:5000/api/auth/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email: formData.email.trim(),
+    password: formData.password,
+  }),
+});
+
 
       const data = await res.json();
 
-      if (!res.ok || !data.success) {
-        toast({
-          title: "Login Failed",
-          description: data.message || "Invalid credentials",
-          variant: "destructive",
-        });
-        return;
-      }
+     if (!res.ok || !data.success) {
+  toast({
+    title: "Login Failed",
+    description: data.error || data.message || "Invalid credentials",
+    variant: "destructive",
+  });
+  return;
+}
+
 
       login(data.user, data.token);
       toast({ title: "Login successful" });
@@ -961,6 +966,7 @@ export default function Login() {
             </Link>
           </p>
         </Card>
+        
       </div>
     </Layout>
   );

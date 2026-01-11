@@ -1,106 +1,133 @@
-// import "dotenv/config";
-// import express from "express";
-import cors from "cors";
-// import { connectDB } from "./db";
 
-// import {
-//   handleCancelBooking,
-//   handleCreateBooking,
-//   handleGetBookings,
-//   handleUpdateBookingStatus
-// } from "./routes/booking";
-
-// import { handleLogin, handleRegister } from "./routes/auth";
-// import { handleGetServiceById, handleGetServices } from "./routes/Service";
-
-// export function createServer() {
-//   connectDB();
-
-//   const app = express();
-
-//   app.use(express.json());
-
-//   app.get("/api/health", (_req, res) => {
-//     res.json({ status: "OK" });
-//   });
-
-//   // Services
-//   app.get("/api/services", handleGetServices);
-//   app.get("/api/services/:id", handleGetServiceById);
-
-//   // Auth
-//   app.post("/api/auth/register", handleRegister);
-//   app.post("/api/auth/login", handleLogin);
-
-//   // Bookings
-//   app.get("/api/bookings", handleGetBookings);
-//   app.post("/api/bookings", handleCreateBooking);
-//   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
-//   app.delete("/api/bookings/:id", handleCancelBooking);
-
-//   console.log(`✅ Express app created on http://localhost:${process.env.PORT || 5000}`);
-//   return app;
-// }
-
-
+// // index.ts
 // import path from "path";
 // import express from "express";
+// import { fileURLToPath } from "url";
 // import { createServer } from "./server";
 
-// const PORT = process.env.PORT || 5000;
+// // ✅ FIX: PORT ko number me convert karo
+// // const PORT: number = Number(process.env.PORT) || 5000;
+// const PORT: number = Number(process.env.PORT) || 5000;
 // const HOST = "0.0.0.0";
 
 // const app = createServer();
 
+// // Get __dirname in ES Modules
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
 // // SPA build path
-// const __dirname = import.meta.dirname;
 // const distPath = path.join(__dirname, "../spa");
 
 // // Serve frontend
 // app.use(express.static(distPath));
 
-// // ✅ Express 5 SAFE fallback
+// // Fallback for SPA (React/Vite)
 // app.use((req, res, next) => {
 //   if (req.path.startsWith("/api")) return next();
 //   res.sendFile(path.join(distPath, "index.html"));
 // });
 
+// // Start server
 // app.listen(PORT, HOST, () => {
 //   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 // });
-// export { createServer };
 
 
-// index.ts
+//   import path from "path";
+//   import express from "express";
+//   import { fileURLToPath } from "url";
+//   import { createServer } from "./server";
+// import * as authRoutes from "./routes/auth";
+
+
+//   const PORT: number = Number(process.env.PORT) || 5000;
+//   const HOST = "0.0.0.0";
+
+//   const app = createServer();
+
+//   // __dirname
+//   const __filename = fileURLToPath(import.meta.url);
+//   const __dirname = path.dirname(__filename);
+
+//   // SPA build path
+//   const distPath = path.join(__dirname, "../spa");
+
+//   // Static frontend
+//   app.use(express.static(distPath));
+
+//   // ❌ API not found
+//   app.use("/api", (_req, res) => {
+//     res.status(404).json({ error: "API endpoint not found" });
+//   });
+
+//   app.post("/api/auth/login", authRoutes.handleLogin);
+// app.post("/api/auth/register", authRoutes.handleRegister);
+
+//   // SPA fallback
+//   // app.use((_req, res) => {
+//   //   res.sendFile(path.join(distPath, "index.html"));
+//   // });
+
+//   // ✅ STATIC FRONTEND
+// app.use(express.static(distPath));
+//   // Start server
+//   app.listen(PORT, HOST, () => {
+//     console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+//   });
+
+
+// server/index.ts
 import path from "path";
 import express from "express";
 import { fileURLToPath } from "url";
 import { createServer } from "./server";
+import * as authRoutes from "./routes/auth";
 
-// ✅ FIX: PORT ko number me convert karo
-// const PORT: number = Number(process.env.PORT) || 5000;
-const PORT: number = Number(process.env.PORT) || 8080;
+const PORT: number = Number(process.env.PORT) || 5000;
 const HOST = "0.0.0.0";
 
 const app = createServer();
 
-// Get __dirname in ES Modules
+// __dirname fix for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // SPA build path
 const distPath = path.join(__dirname, "../spa");
 
-// Serve frontend
+// ===============================
+// STATIC FRONTEND
+// ===============================
 app.use(express.static(distPath));
 
-// Fallback for SPA (React/Vite)
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api")) return next();
+// ===============================
+// API ROUTES (IMPORTANT: BEFORE 404)
+// ===============================
+app.post("/api/auth/login", authRoutes.handleLogin);
+app.post("/api/auth/register", authRoutes.handleRegister);
+
+// (future)
+// app.use("/api/bookings", bookingRoutes);
+// app.use("/api/services", serviceRoutes);
+
+// ===============================
+// API 404 (LAST)
+// ===============================
+app.use("/api", (_req, res) => {
+  res.status(404).json({ error: "API endpoint not found" });
+});
+
+// ===============================
+// SPA FALLBACK (React Router)
+// ===============================
+app.use((_req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
-// Start server
+// ===============================
+// START SERVER
+// ===============================
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 });

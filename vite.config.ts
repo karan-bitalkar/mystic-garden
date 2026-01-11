@@ -97,22 +97,75 @@
 
 
 
+// import { defineConfig } from "vite";
+// import react from "@vitejs/plugin-react";
+// import path from "path";
+
+// export default defineConfig({
+//   server: {
+//     host: "0.0.0.0",
+//     port: 5173,
+//   },
+//   build: {
+//     outDir: "dist/spa",
+//     emptyOutDir: true,
+//   },
+//   plugins: [
+//     react(),
+//   ],
+//   resolve: {
+//     alias: {
+//       "@": path.resolve(__dirname, "./client"),
+//       "@shared": path.resolve(__dirname, "./shared"),
+//     },
+//   },
+// });
+
+
+//   import { defineConfig } from "vite";
+//   import react from "@vitejs/plugin-react";
+//   import path from "path";
+
+//   export default defineConfig({
+//     base: "./",                 // 🔥 MOST IMPORTANT
+//     plugins: [react()],
+//     build: {
+//       outDir: "dist",            // 🔥 dist/spa NAHI
+//       emptyOutDir: true,
+//       sourcemap: false,
+//     },
+
+    
+//     resolve: {
+//       alias: {
+//         "@": path.resolve(__dirname, "./client"),
+//         "@shared": path.resolve(__dirname, "./shared"),
+//       },
+//     },
+// });
+
+
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  server: {
-    host: "0.0.0.0",
-    port: 5173,
-  },
+  base: "./",                 // ✅ correct for cPanel / static hosting
+  plugins: [react()],
+
   build: {
-    outDir: "dist/spa",
+    outDir: "dist",
     emptyOutDir: true,
+    sourcemap: false,
+
+    // 🔥 VERY IMPORTANT FOR SSR + NODE MODULES
+    ssr: false,
+    rollupOptions: {
+      external: ["nodemailer"]
+    }
   },
-  plugins: [
-    react(),
-  ],
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),

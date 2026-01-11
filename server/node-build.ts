@@ -40,80 +40,182 @@
 // });
 
 
+// // server/node-build.ts
+// import "dotenv/config";
+// import express from "express";
+// import cors from "cors";
+// import path from "path";
+// import { connectDB } from "./db";
+// import {
+//   handleCancelBooking,
+//   handleCreateBooking,
+//   handleGetBookings,
+//   handleUpdateBookingStatus
+// } from "./routes/booking";
+// import { handleLogin, handleRegister } from "./routes/auth";
+// import { handleGetServiceById, handleGetServices } from "./routes/Service";
+
+// // Create Express App
+// export function createServer() {
+//   connectDB();
+
+//   const app = express();
+//   app.use(cors());
+//   app.use(express.json());
+
+//   // Health check
+//   app.get("/api/health", (_req, res) => res.json({ status: "OK" }));
+
+//   // Services
+//   app.get("/api/services", handleGetServices);
+//   app.get("/api/services/:id", handleGetServiceById);
+
+//   // Auth
+//   app.post("/api/auth/register", handleRegister);
+//   app.post("/api/auth/login", handleLogin);
+
+//   // Bookings
+//   app.get("/api/bookings", handleGetBookings);
+//   app.post("/api/bookings", handleCreateBooking);
+//   app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
+//   app.delete("/api/bookings/:id", handleCancelBooking);
+
+//   return app;
+// }
+
+// // Server Start
+// const app = createServer();
+// const port = process.env.PORT || 5000; // EC2 me 5000 ya environment variable
+// const __dirname = path.resolve();
+
+// const distPath = path.join(__dirname, "../spa"); // React build folder
+
+// // Serve frontend build
+// app.use(express.static(distPath));
+
+// // SPA routing (React Router)
+// app.get("/*", (req, res) => {
+//   if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
+//     return res.status(404).json({ error: "API endpoint not found" });
+//   }
+//   res.sendFile(path.join(distPath, "index.html"));
+// });
+
+// // Listen on 0.0.0.0 for EC2 public access
+// app.listen(port, "0.0.0.0", () => {
+//   console.log(`🚀 Server running on port ${port}`);
+//   console.log(`📱 VITE_API_URL=http://13.60.231.82:5000`);
+//   console.log(`🔧 API: http://<EC2-PUBLIC-IP>:${port}/api`);
+// });
+
+// // Graceful shutdown
+// process.on("SIGTERM", () => {
+//   console.log("🛑 Received SIGTERM, shutting down gracefully");
+//   process.exit(0);
+// });
+// process.on("SIGINT", () => {
+//   console.log("🛑 Received SIGINT, shutting down gracefully");
+//   process.exit(0);
+// });
+
+
+
+
 // server/node-build.ts
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import path from "path";
+import { fileURLToPath } from "url";
+
 import { connectDB } from "./db";
+import { handleLogin, handleRegister } from "./routes/auth";
 import {
   handleCancelBooking,
   handleCreateBooking,
   handleGetBookings,
-  handleUpdateBookingStatus
+  handleUpdateBookingStatus,
 } from "./routes/booking";
-import { handleLogin, handleRegister } from "./routes/auth";
 import { handleGetServiceById, handleGetServices } from "./routes/Service";
 
-// Create Express App
-export function createServer() {
-  connectDB();
+// --------------------
+// SETUP
+// --------------------
+const app = express();
+const PORT = Number(process.env.PORT) || 5000;
+const HOST = "0.0.0.0";
 
-  const app = express();
-  app.use(cors());
-  app.use(express.json());
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  // Health check
-  app.get("/api/health", (_req, res) => res.json({ status: "OK" }));
+// --------------------
+// MIDDLEWARE
+// --------------------
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-  // Services
-  app.get("/api/services", handleGetServices);
-  app.get("/api/services/:id", handleGetServiceById);
+app.use(express.json());
 
-  // Auth
-  app.post("/api/auth/register", handleRegister);
-  app.post("/api/auth/login", handleLogin);
+// --------------------
+// DATABASE
+// --------------------
+connectDB();
 
-  // Bookings
-  app.get("/api/bookings", handleGetBookings);
-  app.post("/api/bookings", handleCreateBooking);
-  app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
-  app.delete("/api/bookings/:id", handleCancelBooking);
+// --------------------
+// API ROUTES
+// --------------------
 
-  return app;
-}
+// Health check
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "OK" });
+});
 
-// Server Start
-const app = createServer();
-const port = process.env.PORT || 5000; // EC2 me 5000 ya environment variable
-const __dirname = path.resolve();
+// Auth
+app.post("/api/auth/register", handleRegister);
+app.post("/api/auth/login", handleLogin);
 
-const distPath = path.join(__dirname, "../spa"); // React build folder
+// Services
+app.get("/api/services", handleGetServices);
+app.get("/api/services/:id", handleGetServiceById);
 
-// Serve frontend build
+// Bookings
+app.get("/api/bookings", handleGetBookings);
+app.post("/api/bookings", handleCreateBooking);
+app.put("/api/bookings/:id/status", handleUpdateBookingStatus);
+app.delete("/api/bookings/:id", handleCancelBooking);
+
+// --------------------
+// FRONTEND (SPA)
+// --------------------
+const distPath = path.join(__dirname, "../spa");
+
+// Serve static frontend
 app.use(express.static(distPath));
 
-// SPA routing (React Router)
-app.get("/*", (req, res) => {
-  if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
-    return res.status(404).json({ error: "API endpoint not found" });
-  }
+// SPA fallback (IMPORTANT FIX)
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(distPath, "index.html"));
 });
 
-// Listen on 0.0.0.0 for EC2 public access
-app.listen(port, "0.0.0.0", () => {
-  console.log(`🚀 Server running on port ${port}`);
-  console.log(`📱 VITE_API_URL=http://13.60.231.82:5000`);
-  console.log(`🔧 API: http://<EC2-PUBLIC-IP>:${port}/api`);
+// --------------------
+// START SERVER
+// --------------------
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+  console.log(`🔧 API: http://<EC2-IP>:${PORT}/api`);
 });
 
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("🛑 Received SIGTERM, shutting down gracefully");
-  process.exit(0);
-});
+// --------------------
+// GRACEFUL SHUTDOWN
+// --------------------
 process.on("SIGINT", () => {
-  console.log("🛑 Received SIGINT, shutting down gracefully");
+  console.log("🛑 Server stopped");
   process.exit(0);
 });

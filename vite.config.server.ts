@@ -7,6 +7,7 @@ export default defineConfig({
     // ✅ MUST be relative with ./
     ssr: "./server/index.ts",
 
+
     outDir: "dist/server",
     target: "node20",
     emptyOutDir: true,
@@ -16,7 +17,7 @@ export default defineConfig({
         "fs",
         "path",
         "url",
-        "http",
+        "http", 
         "https",
         "os",
         "crypto",
