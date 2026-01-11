@@ -196,7 +196,7 @@ import { handleGetServiceById, handleGetServices } from "./routes/Service";
 export function createServer() {
   const app = express();
 
-  // ✅ Body parsers
+  // ✅ parsers
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
@@ -209,18 +209,15 @@ export function createServer() {
     })
   );
 
-  // ❌ REMOVE THIS (VERY IMPORTANT)
+  // ❌ REMOVE THIS LINE (VERY IMPORTANT)
   // app.options("*", cors());
 
-  // ✅ DB
   connectDB();
 
-  // ✅ Health check
   app.get("/api/health", (_req, res) => {
     res.json({ status: "OK" });
   });
 
-  // ✅ Routes
   app.use("/api/admin", adminRoutes);
 
   app.get("/api/services", handleGetServices);
